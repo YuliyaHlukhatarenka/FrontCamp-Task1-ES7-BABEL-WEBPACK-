@@ -2,7 +2,6 @@ function drawArticlesList(list) {
     let oldList = document.getElementsByClassName('news-list');
     if (oldList.length > 0) {
         document.body.removeChild(oldList[0]);
-       
     }
     const fragment = document.createDocumentFragment();
     const table = document.createElement('table');
@@ -22,12 +21,9 @@ function drawArticlesList(list) {
     })
 
     fragment.appendChild(table);
-    
     const div = document.createElement('div');
     div.className = 'news-list';
     div.appendChild(fragment);
     document.body.appendChild(div);
-
 }
-
 export default drawArticlesList;
