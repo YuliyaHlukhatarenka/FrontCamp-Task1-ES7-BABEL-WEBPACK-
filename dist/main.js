@@ -86,6 +86,43 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/drawArticlesList.js":
+/*!*********************************!*\
+  !*** ./src/drawArticlesList.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function drowArticlesList(list) {
+  const fragment = document.createDocumentFragment();
+  const table = document.createElement('table');
+  list.map(item => {
+    const row = document.createElement('tr');
+    const columnImg = document.createElement('td');
+    let img = document.createElement('img');
+    img.style = 'top:10px;left:10px;width:200px;height:auto';
+    img.src = item.urlToImage;
+    columnImg.appendChild(img);
+    row.appendChild(columnImg);
+    const columnText = document.createElement('td');
+    columnText.innerHTML = `<div><h3> ${item.title} </h3><p>Author: ${item.author}</p><p>Published: ${item.publishedAt}</p><p>${item.description}</p><a href=${item.url} target="_blank">more..</a></div>`;
+    row.appendChild(columnText);
+    table.appendChild(row);
+  });
+  fragment.appendChild(table);
+  const div = document.createElement('div');
+  div.className = 'news-list';
+  div.style.width = '600px';
+  div.appendChild(fragment);
+  document.body.appendChild(div);
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (drowArticlesList);
+
+/***/ }),
+
 /***/ "./src/getArticles.js":
 /*!****************************!*\
   !*** ./src/getArticles.js ***!
@@ -136,41 +173,28 @@ async function getChanels() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _getChanels__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getChanels */ "./src/getChanels.js");
+/* harmony import */ var _showChanels__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./showChanels */ "./src/showChanels.js");
+
+
+Object(_getChanels__WEBPACK_IMPORTED_MODULE_0__["default"])().then(response => Object(_showChanels__WEBPACK_IMPORTED_MODULE_1__["default"])(response));
+
+/***/ }),
+
+/***/ "./src/showChanels.js":
+/*!****************************!*\
+  !*** ./src/showChanels.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _drawArticlesList__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./drawArticlesList */ "./src/drawArticlesList.js");
 /* harmony import */ var _getArticles__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getArticles */ "./src/getArticles.js");
 
 
 
-function showChanelNews(e) {
-  if (e.target.selectedIndex) {
-    Object(_getArticles__WEBPACK_IMPORTED_MODULE_1__["default"])(e.target[e.target.selectedIndex].id).then(response => drowArticlesList(response));
-  }
-}
-
-function drowArticlesList(list) {
-  const fragment = document.createDocumentFragment();
-  const table = document.createElement('table');
-  list.map(item => {
-    const row = document.createElement('tr');
-    const columnImg = document.createElement('td');
-    let img = document.createElement('img');
-    img.style = 'top:10px;left:10px;width:100px;height:auto';
-    img.src = item.urlToImage;
-    columnImg.appendChild(img);
-    row.appendChild(columnImg);
-    const columnText = document.createElement('td');
-    columnText.innerHTML = `<div><h3> ${item.title} </h3><p>Author: ${item.author}</p><p>Published: ${item.publishedAt}</p><p>${item.description}</p><a href=${item.url} target="_blank">more..</a></div>`;
-    row.appendChild(columnText);
-    table.appendChild(row);
-  });
-  fragment.appendChild(table);
-  const div = document.createElement('div');
-  div.className = 'news-list';
-  div.style.width = '600px';
-  div.appendChild(fragment);
-  document.body.appendChild(div);
-}
-
-function loadChanels(items) {
+function showChanels(items) {
   let i = 1;
   const fragment = document.createDocumentFragment();
   const noSelection = document.createElement('option');
@@ -195,7 +219,13 @@ function loadChanels(items) {
   document.body.appendChild(input);
 }
 
-Object(_getChanels__WEBPACK_IMPORTED_MODULE_0__["default"])().then(response => loadChanels(response));
+function showChanelNews(e) {
+  if (e.target.selectedIndex) {
+    Object(_getArticles__WEBPACK_IMPORTED_MODULE_1__["default"])(e.target[e.target.selectedIndex].id).then(response => Object(_drawArticlesList__WEBPACK_IMPORTED_MODULE_0__["default"])(response));
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (showChanels);
 
 /***/ })
 

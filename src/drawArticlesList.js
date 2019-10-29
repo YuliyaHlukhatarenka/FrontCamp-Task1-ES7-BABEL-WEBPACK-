@@ -1,4 +1,9 @@
-function drowArticlesList(list) {
+function drawArticlesList(list) {
+    let oldList = document.getElementsByClassName('news-list');
+    if (oldList.length > 0) {
+        document.body.removeChild(oldList[0]);
+       
+    }
     const fragment = document.createDocumentFragment();
     const table = document.createElement('table');
 
@@ -6,7 +11,7 @@ function drowArticlesList(list) {
         const row = document.createElement('tr');
         const columnImg = document.createElement('td');
         let img = document.createElement('img');
-        img.style = 'top:10px;left:10px;width:200px;height:auto';
+        img.style = 'top:10px;left:10px;width:100%;height:auto';
         img.src = item.urlToImage;
         columnImg.appendChild(img);
         row.appendChild(columnImg);
@@ -17,12 +22,12 @@ function drowArticlesList(list) {
     })
 
     fragment.appendChild(table);
+    
     const div = document.createElement('div');
     div.className = 'news-list';
-    div.style.width = '600px';
     div.appendChild(fragment);
     document.body.appendChild(div);
 
 }
 
-export default drowArticlesList;
+export default drawArticlesList;

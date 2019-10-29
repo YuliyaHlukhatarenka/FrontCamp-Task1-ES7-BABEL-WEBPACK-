@@ -31,7 +31,7 @@ function showChanels(items) {
 }
 
 function showChanelNews(e) {
-    if (e.target.selectedIndex) {
+     if (e.target.selectedIndex && e.clientX === 0) {
         getArticles(e.target[e.target.selectedIndex].id).then(response => drawArticlesList(response));
     }
 }
