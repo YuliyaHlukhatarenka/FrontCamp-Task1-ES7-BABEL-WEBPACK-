@@ -1,6 +1,50 @@
 /******/ (function(modules) { // webpackBootstrap
+/******/ 	// install a JSONP callback for chunk loading
+/******/ 	function webpackJsonpCallback(data) {
+/******/ 		var chunkIds = data[0];
+/******/ 		var moreModules = data[1];
+/******/
+/******/
+/******/ 		// add "moreModules" to the modules object,
+/******/ 		// then flag all "chunkIds" as loaded and fire callback
+/******/ 		var moduleId, chunkId, i = 0, resolves = [];
+/******/ 		for(;i < chunkIds.length; i++) {
+/******/ 			chunkId = chunkIds[i];
+/******/ 			if(Object.prototype.hasOwnProperty.call(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 				resolves.push(installedChunks[chunkId][0]);
+/******/ 			}
+/******/ 			installedChunks[chunkId] = 0;
+/******/ 		}
+/******/ 		for(moduleId in moreModules) {
+/******/ 			if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
+/******/ 				modules[moduleId] = moreModules[moduleId];
+/******/ 			}
+/******/ 		}
+/******/ 		if(parentJsonpFunction) parentJsonpFunction(data);
+/******/
+/******/ 		while(resolves.length) {
+/******/ 			resolves.shift()();
+/******/ 		}
+/******/
+/******/ 	};
+/******/
+/******/
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
+/******/
+/******/ 	// object to store loaded and loading chunks
+/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 	// Promise = chunk loading, 0 = chunk loaded
+/******/ 	var installedChunks = {
+/******/ 		"main": 0
+/******/ 	};
+/******/
+/******/
+/******/
+/******/ 	// script path function
+/******/ 	function jsonpScriptSrc(chunkId) {
+/******/ 		return __webpack_require__.p + "chunk-" + chunkId + ".js"
+/******/ 	}
 /******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
@@ -26,6 +70,67 @@
 /******/ 		return module.exports;
 /******/ 	}
 /******/
+/******/ 	// This file contains only the entry chunk.
+/******/ 	// The chunk loading function for additional chunks
+/******/ 	__webpack_require__.e = function requireEnsure(chunkId) {
+/******/ 		var promises = [];
+/******/
+/******/
+/******/ 		// JSONP chunk loading for javascript
+/******/
+/******/ 		var installedChunkData = installedChunks[chunkId];
+/******/ 		if(installedChunkData !== 0) { // 0 means "already installed".
+/******/
+/******/ 			// a Promise means "currently loading".
+/******/ 			if(installedChunkData) {
+/******/ 				promises.push(installedChunkData[2]);
+/******/ 			} else {
+/******/ 				// setup Promise in chunk cache
+/******/ 				var promise = new Promise(function(resolve, reject) {
+/******/ 					installedChunkData = installedChunks[chunkId] = [resolve, reject];
+/******/ 				});
+/******/ 				promises.push(installedChunkData[2] = promise);
+/******/
+/******/ 				// start chunk loading
+/******/ 				var script = document.createElement('script');
+/******/ 				var onScriptComplete;
+/******/
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 				script.src = jsonpScriptSrc(chunkId);
+/******/
+/******/ 				// create error before stack unwound to get useful stacktrace later
+/******/ 				var error = new Error();
+/******/ 				onScriptComplete = function (event) {
+/******/ 					// avoid mem leaks in IE.
+/******/ 					script.onerror = script.onload = null;
+/******/ 					clearTimeout(timeout);
+/******/ 					var chunk = installedChunks[chunkId];
+/******/ 					if(chunk !== 0) {
+/******/ 						if(chunk) {
+/******/ 							var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 							var realSrc = event && event.target && event.target.src;
+/******/ 							error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 							error.name = 'ChunkLoadError';
+/******/ 							error.type = errorType;
+/******/ 							error.request = realSrc;
+/******/ 							chunk[1](error);
+/******/ 						}
+/******/ 						installedChunks[chunkId] = undefined;
+/******/ 					}
+/******/ 				};
+/******/ 				var timeout = setTimeout(function(){
+/******/ 					onScriptComplete({ type: 'timeout', target: script });
+/******/ 				}, 120000);
+/******/ 				script.onerror = script.onload = onScriptComplete;
+/******/ 				document.head.appendChild(script);
+/******/ 			}
+/******/ 		}
+/******/ 		return Promise.all(promises);
+/******/ 	};
 /******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
@@ -79,12 +184,52 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/ 	// on error function for async loading
+/******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };
+/******/
+/******/ 	var jsonpArray = window["webpackJsonp"] = window["webpackJsonp"] || [];
+/******/ 	var oldJsonpFunction = jsonpArray.push.bind(jsonpArray);
+/******/ 	jsonpArray.push = webpackJsonpCallback;
+/******/ 	jsonpArray = jsonpArray.slice();
+/******/ 	for(var i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);
+/******/ 	var parentJsonpFunction = oldJsonpFunction;
+/******/
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.js");
 /******/ })
 /************************************************************************/
 /******/ ({
+
+/***/ "./src/DataService.js":
+/*!****************************!*\
+  !*** ./src/DataService.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+class DataService {
+  async getArticles(id) {
+    let response = await fetch(`https://newsapi.org/v2/top-headlines?sources=${id}&apiKey=e09036cd7e8d417db292088ad70ea084`);
+    let news = await response.json();
+    let articles = news.articles;
+    return articles;
+  }
+
+  async getChanels() {
+    let response = await fetch('https://newsapi.org/v2/sources?apiKey=e09036cd7e8d417db292088ad70ea084');
+    let chanels = await response.json();
+    let sources = chanels.sources;
+    return sources;
+  }
+
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (DataService);
+
+/***/ }),
 
 /***/ "./src/drawArticlesList.js":
 /*!*********************************!*\
@@ -95,16 +240,28 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-function drowArticlesList(list) {
+function drawArticlesList(list) {
+  let oldList = document.getElementsByClassName('news-list');
+
+  if (oldList.length > 0) {
+    document.body.removeChild(oldList[0]);
+  }
+
   const fragment = document.createDocumentFragment();
   const table = document.createElement('table');
   list.map(item => {
     const row = document.createElement('tr');
     const columnImg = document.createElement('td');
     let img = document.createElement('img');
-    img.style = 'top:10px;left:10px;width:200px;height:auto';
+    img.style = 'top:10px;left:10px;width:100%;height:auto';
     img.src = item.urlToImage;
     columnImg.appendChild(img);
+
+    img.onerror = async function () {
+      let loadFile = await __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ./errorHandling.js */ "./src/errorHandling.js"));
+      columnImg.innerHTML = `<p>${loadFile.default()}</p>`;
+    };
+
     row.appendChild(columnImg);
     const columnText = document.createElement('td');
     columnText.innerHTML = `<div><h3> ${item.title} </h3><p>Author: ${item.author}</p><p>Published: ${item.publishedAt}</p><p>${item.description}</p><a href=${item.url} target="_blank">more..</a></div>`;
@@ -114,87 +271,24 @@ function drowArticlesList(list) {
   fragment.appendChild(table);
   const div = document.createElement('div');
   div.className = 'news-list';
-  div.style.width = '600px';
   div.appendChild(fragment);
   document.body.appendChild(div);
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (drowArticlesList);
+/* harmony default export */ __webpack_exports__["default"] = (drawArticlesList);
 
 /***/ }),
 
-/***/ "./src/getArticles.js":
+/***/ "./src/drawChanels.js":
 /*!****************************!*\
-  !*** ./src/getArticles.js ***!
+  !*** ./src/drawChanels.js ***!
   \****************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-async function getArticles(id) {
-  let response = await fetch(`https://newsapi.org/v2/top-headlines?sources=${id}&apiKey=e09036cd7e8d417db292088ad70ea084`);
-  let news = await response.json();
-  let articles = news.articles;
-  return articles;
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (getArticles);
-
-/***/ }),
-
-/***/ "./src/getChanels.js":
-/*!***************************!*\
-  !*** ./src/getChanels.js ***!
-  \***************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-async function getChanels() {
-  let response = await fetch('https://newsapi.org/v2/sources?apiKey=e09036cd7e8d417db292088ad70ea084');
-  let chanels = await response.json();
-  let sources = chanels.sources;
-  return sources;
-}
-
-/* harmony default export */ __webpack_exports__["default"] = (getChanels);
-
-/***/ }),
-
-/***/ "./src/index.js":
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _getChanels__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getChanels */ "./src/getChanels.js");
-/* harmony import */ var _showChanels__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./showChanels */ "./src/showChanels.js");
-
-
-Object(_getChanels__WEBPACK_IMPORTED_MODULE_0__["default"])().then(response => Object(_showChanels__WEBPACK_IMPORTED_MODULE_1__["default"])(response));
-
-/***/ }),
-
-/***/ "./src/showChanels.js":
-/*!****************************!*\
-  !*** ./src/showChanels.js ***!
-  \****************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _drawArticlesList__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./drawArticlesList */ "./src/drawArticlesList.js");
-/* harmony import */ var _getArticles__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getArticles */ "./src/getArticles.js");
-
-
-
-function showChanels(items) {
+function drawChanels(items) {
   let i = 1;
   const fragment = document.createDocumentFragment();
   const noSelection = document.createElement('option');
@@ -213,19 +307,61 @@ function showChanels(items) {
   input.className = 'chanels';
   input.style.width = '200px';
   const datalist = document.createElement('select');
-  input.addEventListener('click', showChanelNews);
   datalist.appendChild(fragment);
   input.appendChild(datalist);
   document.body.appendChild(input);
 }
 
-function showChanelNews(e) {
+/* harmony default export */ __webpack_exports__["default"] = (drawChanels);
+
+/***/ }),
+
+/***/ "./src/index.js":
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _DataService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DataService */ "./src/DataService.js");
+/* harmony import */ var _drawChanels__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./drawChanels */ "./src/drawChanels.js");
+/* harmony import */ var _drawArticlesList__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./drawArticlesList */ "./src/drawArticlesList.js");
+/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./style.css */ "./src/style.css");
+/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_style_css__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+let server = new _DataService__WEBPACK_IMPORTED_MODULE_0__["default"]();
+document.addEventListener("load", documentLoaded());
+
+function documentLoaded() {
+  server.getChanels().then(response => {
+    Object(_drawChanels__WEBPACK_IMPORTED_MODULE_1__["default"])(response);
+    document.addEventListener('change', drawChanelArticles);
+  });
+}
+
+function drawChanelArticles(e) {
   if (e.target.selectedIndex) {
-    Object(_getArticles__WEBPACK_IMPORTED_MODULE_1__["default"])(e.target[e.target.selectedIndex].id).then(response => Object(_drawArticlesList__WEBPACK_IMPORTED_MODULE_0__["default"])(response));
+    server.getArticles(e.target[e.target.selectedIndex].id).then(response => {
+      Object(_drawArticlesList__WEBPACK_IMPORTED_MODULE_2__["default"])(response);
+    });
   }
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (showChanels);
+/***/ }),
+
+/***/ "./src/style.css":
+/*!***********************!*\
+  !*** ./src/style.css ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
 
 /***/ })
 

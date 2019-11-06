@@ -1,4 +1,25 @@
-import getChanels from './getChanels';
-import showChanels from './showChanels';
+import DataService from './DataService';
+import showChanels from './drawChanels';
+import drawArticlesList from './drawArticlesList';
+import './style.css';
 
-getChanels().then(response => showChanels(response));
+let server = new DataService();
+
+document.addEventListener("load", documentLoaded());
+
+function documentLoaded() {
+    server.getChanels()
+        .then(response => {
+            showChanels(response);
+            document.addEventListener('change', drawChanelArticles);
+        });
+}
+
+function drawChanelArticles(e) {
+    if (e.target.selectedIndex) {
+        server.getArticles(e.target[e.target.selectedIndex].id)
+            .then(response => {
+                drawArticlesList(response);
+            })
+    }
+}

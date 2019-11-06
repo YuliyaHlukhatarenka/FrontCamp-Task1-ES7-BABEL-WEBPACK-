@@ -13,6 +13,10 @@ function drawArticlesList(list) {
         img.style = 'top:10px;left:10px;width:100%;height:auto';
         img.src = item.urlToImage;
         columnImg.appendChild(img);
+        img.onerror = async function () {
+           let loadFile = await import(/* webpackMode: "lazy" */ './errorHandling.js');
+            columnImg.innerHTML = `<p>${loadFile.default()}</p>`;
+        }  
         row.appendChild(columnImg);
         const columnText = document.createElement('td');
         columnText.innerHTML = `<div><h3> ${item.title} </h3><p>Author: ${item.author}</p><p>Published: ${item.publishedAt}</p><p>${item.description}</p><a href=${item.url} target="_blank">more..</a></div>`;

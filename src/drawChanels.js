@@ -1,7 +1,4 @@
-import drawArticlesList from './drawArticlesList';
-import getArticles from './getArticles';
-
-function showChanels(items) {
+function drawChanels(items) {
     let i = 1;
     const fragment = document.createDocumentFragment();
     const noSelection = document.createElement('option');
@@ -23,17 +20,9 @@ function showChanels(items) {
     input.style.width = '200px';
 
     const datalist = document.createElement('select');
-    input.addEventListener('click', showChanelNews);
 
     datalist.appendChild(fragment);
     input.appendChild(datalist);
     document.body.appendChild(input);
 }
-
-function showChanelNews(e) {
-     if (e.target.selectedIndex && e.clientX === 0) {
-        getArticles(e.target[e.target.selectedIndex].id).then(response => drawArticlesList(response));
-    }
-}
-
-export default showChanels;
+export default drawChanels;
