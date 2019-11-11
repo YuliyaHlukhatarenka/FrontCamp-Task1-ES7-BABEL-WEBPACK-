@@ -15,7 +15,7 @@ function drawArticlesList(list) {
         columnImg.appendChild(img);
         img.onerror = async function () {
            let loadFile = await import(/* webpackMode: "lazy" */ './errorHandling.js');
-            columnImg.innerHTML = `<p>${loadFile.default()}</p>`;
+            columnImg.innerHTML = `<p>${loadFile.errorOfImageLoading()}</p>`;
         }  
         row.appendChild(columnImg);
         const columnText = document.createElement('td');

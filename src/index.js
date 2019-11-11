@@ -18,8 +18,9 @@ function documentLoaded() {
 function drawChanelArticles(e) {
     if (e.target.selectedIndex) {
         server.getArticles(e.target[e.target.selectedIndex].id)
-            .then(response => {
-                drawArticlesList(response);
-            })
+            .then(
+                response => {drawArticlesList(response)},
+                error => {import(/* webpackMode: "lazy" */ './errorHandling.js').then( errorFunc => errorFunc.ErrorHandling.getInstance(error))}
+            )
     }
 }

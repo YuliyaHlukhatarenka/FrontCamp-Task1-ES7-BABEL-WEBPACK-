@@ -26,3 +26,33 @@ table, th, td {
 a {
     color: rgb(53, 51, 51);
  }
+
+/* error handling */
+
+ .modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1;
+    padding-top: 100px; 
+    left: 25%;
+    top: 10%;
+    overflow: auto; 
+    background-color: #88262641;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+  }
+  
+  .close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
