@@ -205,29 +205,55 @@
 /*!****************************!*\
   !*** ./src/DataService.js ***!
   \****************************/
-/*! exports provided: default */
+/*! exports provided: DataServiceFactory */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-class DataService {
-  async getArticles(id) {
-    let response = await fetch(`https://newsapi.org/v2/top-headlines?sources=${id}&apiKey=e09036cd7e8d417db292088ad70ea084`);
-    let news = await response.json();
-    let articles = news.articles;
-    return articles;
-  }
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DataServiceFactory", function() { return DataServiceFactory; });
+class DataServiceFactory {
+  createRequest(type, data, url) {
+    switch (type) {
+      case 'GET':
+        return new GETRequest(data);
 
-  async getChanels() {
-    let response = await fetch('https://newsapi.org/v2/sources?apiKey=e09036cd7e8d417db292088ad70ea084');
-    let chanels = await response.json();
-    let sources = chanels.sources;
-    return sources;
+      default:
+        return new otherRequests(type, url);
+    }
   }
 
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (DataService);
+class GETRequest {
+  constructor(id) {
+    const apiKey = 'e09036cd7e8d417db292088ad70ea084';
+    let url;
+
+    if (id) {
+      url = `https://newsapi.org/v2/top-headlines?sources=${id}&apiKey=${apiKey}`;
+    } else {
+      url = `https://newsapi.org/v2/sources?apiKey=${apiKey}`;
+    }
+
+    this.result = this.getData(url);
+  }
+
+  async getData(url) {
+    let response = await fetch(url);
+    let result = await response.json();
+
+    if (result.status != 'ok' || result.totalResults === 7) {
+      throw "Something wrong(there are 7 articles!)";
+    }
+
+    return result;
+  }
+
+}
+
+class otherRequests {}
+
+
 
 /***/ }),
 
@@ -259,7 +285,7 @@ function drawArticlesList(list) {
 
     img.onerror = async function () {
       let loadFile = await __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ./errorHandling.js */ "./src/errorHandling.js"));
-      columnImg.innerHTML = `<p>${loadFile.default()}</p>`;
+      columnImg.innerHTML = `<p>${loadFile.errorOfImageLoading()}</p>`;
     };
 
     row.appendChild(columnImg);
@@ -334,20 +360,24 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-let server = new _DataService__WEBPACK_IMPORTED_MODULE_0__["default"]();
+let factory = new _DataService__WEBPACK_IMPORTED_MODULE_0__["DataServiceFactory"]();
 document.addEventListener("load", documentLoaded());
 
 function documentLoaded() {
-  server.getChanels().then(response => {
-    Object(_drawChanels__WEBPACK_IMPORTED_MODULE_1__["default"])(response);
+  const chanels = factory.createRequest('GET');
+  chanels.result.then(response => {
+    Object(_drawChanels__WEBPACK_IMPORTED_MODULE_1__["default"])(response.sources);
     document.addEventListener('change', drawChanelArticles);
   });
 }
 
 function drawChanelArticles(e) {
   if (e.target.selectedIndex) {
-    server.getArticles(e.target[e.target.selectedIndex].id).then(response => {
-      Object(_drawArticlesList__WEBPACK_IMPORTED_MODULE_2__["default"])(response);
+    const articles = factory.createRequest('GET', e.target[e.target.selectedIndex].id);
+    articles.result.then(response => {
+      Object(_drawArticlesList__WEBPACK_IMPORTED_MODULE_2__["default"])(response.articles);
+    }, error => {
+      __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ./errorHandling.js */ "./src/errorHandling.js")).then(errorFunc => errorFunc.ErrorHandling.getInstance(error));
     });
   }
 }

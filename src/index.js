@@ -1,26 +1,26 @@
-import DataService from './DataService';
+import { DataServiceFactory } from './DataService';
 import showChanels from './drawChanels';
 import drawArticlesList from './drawArticlesList';
 import './style.css';
 
-let server = new DataService();
+let factory = new DataServiceFactory();
 
 document.addEventListener("load", documentLoaded());
 
 function documentLoaded() {
-    server.getChanels()
-        .then(response => {
-            showChanels(response);
-            document.addEventListener('change', drawChanelArticles);
-        });
+    const chanels = factory.createRequest('GET');
+    chanels.result.then(response => {
+        showChanels(response.sources);
+        document.addEventListener('change', drawChanelArticles);
+    });
 }
 
 function drawChanelArticles(e) {
     if (e.target.selectedIndex) {
-        server.getArticles(e.target[e.target.selectedIndex].id)
-            .then(
-                response => {drawArticlesList(response)},
-                error => {import(/* webpackMode: "lazy" */ './errorHandling.js').then( errorFunc => errorFunc.ErrorHandling.getInstance(error))}
-            )
+        const articles = factory.createRequest('GET', e.target[e.target.selectedIndex].id);
+        articles.result.then(
+            response => { drawArticlesList(response.articles) },
+            error => { import(/* webpackMode: "lazy" */ './errorHandling.js').then(errorFunc => errorFunc.ErrorHandling.getInstance(error)) }
+        )
     }
 }

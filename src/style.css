@@ -37,7 +37,8 @@ a {
     left: 25%;
     top: 10%;
     overflow: auto; 
-    background-color: #88262641;
+    background-color: #723333ad;
+    color: white;
     padding: 20px;
     border: 1px solid #888;
     width: 50%;
