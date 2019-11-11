@@ -3,12 +3,21 @@ import showChanels from './drawChanels';
 import drawArticlesList from './drawArticlesList';
 import './style.css';
 
-let factory = new DataServiceFactory();
+const proxyRequest = new Proxy(new DataServiceFactory(), {
+    set(target, prop, value) {
+        if (prop) {
+            target.createRequest(value);
+            return true;
+        } else {
+            return false;
+        }
+    }
+});
 
 document.addEventListener("load", documentLoaded());
 
 function documentLoaded() {
-    const chanels = factory.createRequest('GET');
+    const chanels = proxyRequest.createRequest('GET');
     chanels.result.then(response => {
         showChanels(response.sources);
         document.addEventListener('change', drawChanelArticles);
@@ -17,7 +26,7 @@ function documentLoaded() {
 
 function drawChanelArticles(e) {
     if (e.target.selectedIndex) {
-        const articles = factory.createRequest('GET', e.target[e.target.selectedIndex].id);
+        const articles = proxyRequest.createRequest('GET', e.target[e.target.selectedIndex].id);
         articles.result.then(
             response => { drawArticlesList(response.articles) },
             error => { import(/* webpackMode: "lazy" */ './errorHandling.js').then(errorFunc => errorFunc.ErrorHandling.getInstance(error)) }
