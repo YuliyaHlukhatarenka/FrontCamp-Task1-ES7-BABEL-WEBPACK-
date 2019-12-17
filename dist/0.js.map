@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./src/errorHandling.js"],"names":["errorHandling","e"],"mappings":";;;;;;;;;;AAAA;AAAA;AAAe,SAASA,aAAT,CAAuBC,CAAvB,EAA0B;AACrC,SAAO,qBAAP;AACH,C","file":"0.js","sourcesContent":["export default function errorHandling(e) {\r\n    return \"Image is not loaded\";\r\n}"],"sourceRoot":""}
